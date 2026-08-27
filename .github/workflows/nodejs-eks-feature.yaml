@@ -29,4 +29,4 @@ jobs:
         echo "version=$VERSION" >> $GITHUB_OUTPUT
 
     - name: print version
-      run: echo "The exact version is ${{ steps.id.outputs.version }}"
+      run: echo "The exact version is ${{ steps.version.outputs.version }}"
