@@ -12,6 +12,6 @@ jobs:
   build-nodejs:
     runs-on: ubuntu-latest
     steps:
-    - name: read version
+    - name: Read version
       run: |
-      echo project "${{ inputs.project }}"
+        echo project "${{ inputs.project }}"
