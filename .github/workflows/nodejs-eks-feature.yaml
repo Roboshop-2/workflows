@@ -16,10 +16,10 @@ jobs:
     #runs-on: ubuntu-latest
     runs-on: 
      group: roboshop
-     labels: nodejs
+     labels: [nodejs]
     steps:
     - name: code checkout
-      uses: actions/checkout@v7 # these are like plugins in jenkins
+      uses: actions/checkout@v4 # these are like plugins in jenkins
 
     - name: list files
       run: |
@@ -28,14 +28,16 @@ jobs:
     - name: read version
       id: version
       run: |
-        VERSION=$(jq -r '.version' package.json)
+        VERSION=$(jq -r '.version' ./${{ inputs.component }}/package.json)
         echo "version=$VERSION" >> $GITHUB_OUTPUT
 
     - name: print version
       run: echo "The exact version is ${{ steps.version.outputs.version }}"
 
     - name: install dependencies
+      working-directory: ./${{ inputs.component }}
       run: npm install
 
     - name: unit-tests
+      working-directory: ./${{ inputs.component }}
       run: npm test
