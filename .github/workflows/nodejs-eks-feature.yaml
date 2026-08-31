@@ -52,7 +52,7 @@ jobs:
   build-test-deploy:
     runs-on:
       group: roboshop
-      labels: nodejs-dev
+      labels: nodejs-dev 
     permissions:
       statuses: write
       contents: write
