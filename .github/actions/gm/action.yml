@@ -13,7 +13,7 @@ inputs:
 outputs:
   greeting-status:
     description: 'The status of the greeting'
-    value: ${{ steps.invalid-id.outputs.status }}
+    value: ${{ steps.set-status.outputs.status }}
 
 runs:
   using: 'composite' # Tells GitHub this is a composite action
