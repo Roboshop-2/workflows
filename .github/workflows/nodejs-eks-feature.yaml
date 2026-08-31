@@ -230,7 +230,7 @@ jobs:
           repository: ${{ env.org }}/catalogue-config
           token: ${{ secrets.GH_PAT }}
           path: catalogue-config
-
+        
       - name: update-config-repo
         id: gitops-update
         working-directory: catalogue-config
@@ -240,17 +240,36 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git commit -am "Deploy ${component}@${{ steps.version.outputs.app_version }} to dev (${{ github.sha }})"
-          git push origin main
-          echo "commit_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-      - name: status-update-config
-        if: steps.gitops-update.outcome == 'success' || steps.gitops-update.outcome == 'failure'
-        uses: Roboshop-2/workflows/.github/actions/commit-status@main
-        with:
-          state: ${{ steps.gitops-update.outcome }}
-          context: update-config
-          description: ${{ steps.gitops-update.outcome == 'success' && 'catalogue-config updated' || 'Failed to update catalogue-config' }}
-          token: ${{ github.token }}
+
+          if ! git diff --quiet; then
+            git commit -am "Deploy ${component}@${{ steps.version.outputs.app_version }} to dev (${{ github.sha }})"
+            git push origin main
+            echo "commit_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          else
+            echo "No changes in values-dev.yaml to commit."
+            echo "commit_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          fi
+
+      # - name: update-config-repo
+      #   id: gitops-update
+      #   working-directory: catalogue-config
+      #   run: |
+      #     set -e
+      #     yq -i ".deployment.imageVersion = \"${{ steps.version.outputs.app_version }}\"" values-dev.yaml
+
+      #     git config user.name "github-actions[bot]"
+      #     git config user.email "github-actions[bot]@users.noreply.github.com"
+      #     git commit -am "Deploy ${component}@${{ steps.version.outputs.app_version }} to dev (${{ github.sha }})"
+      #     git push origin main
+      #     echo "commit_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      # - name: status-update-config
+      #   if: steps.gitops-update.outcome == 'success' || steps.gitops-update.outcome == 'failure'
+      #   uses: Roboshop-2/workflows/.github/actions/commit-status@main
+      #   with:
+      #     state: ${{ steps.gitops-update.outcome }}
+      #     context: update-config
+      #     description: ${{ steps.gitops-update.outcome == 'success' && 'catalogue-config updated' || 'Failed to update catalogue-config' }}
+      #     token: ${{ github.token }}
 
       # mirrors 'kubectl rollout status' — force a sync of the commit that was
       # just pushed (don't wait on the 45s auto-sync poll) and fail the
