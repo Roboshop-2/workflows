@@ -332,9 +332,10 @@ jobs:
             -f catalogue_url=${{ steps.endpoint.outputs.catalogue_url }}
 
           sleep 10
-          run_id=$(gh run list --repo snraju98/catalogue-api-tests --workflow=api-tests.yaml --json databaseId,createdAt --jq 'sort_by(.createdAt) | last | .databaseId')
+          run_id=$(gh run list --repo Roboshop-2/catalogue-api-tests --workflow=api-tests.yaml --json databaseId,createdAt --jq 'sort_by(.createdAt) | last | .databaseId')
           echo "watching catalogue-api-tests run $run_id"
-          gh run watch "$run_id" --repo snraju98/catalogue-api-tests --exit-status
+          gh run watch "$run_id" --repo Roboshop-2/catalogue-api-tests --exit-status
+
       - name: status-api-tests
         if: steps.api-tests.outcome == 'success' || steps.api-tests.outcome == 'failure'
         uses: Roboshop-2/workflows/.github/actions/commit-status@main
